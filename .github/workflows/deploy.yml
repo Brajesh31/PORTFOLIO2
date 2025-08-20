@@ -1,0 +1,38 @@
+name: Deploy to Hostinger FTP
+ 
+on:
+  push:
+    branches:
+      - main  # Change to your deployment branch if different
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22' 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+
+      - name: Install dependencies
+        run: pnpm install --force
+
+      - name: Run build
+        run: pnpm run build
+
+      - name: Deploy dist folder via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 157.173.208.175
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./out/
+          server-dir: brajesh4/
+          port: 21
